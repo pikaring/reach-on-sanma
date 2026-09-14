@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reach on SANMA｜ブラウザだけで遊べる三人麻雀</title>
+<meta name="description" content="インストール不要・通信なし・1ファイルで動く三人麻雀（サンマ）。打ち筋の違う5人のCPUと3段階の強さ。北抜き・ツモ損ありの本格ルール。iPhoneの1画面に収まる盤面。">
+<meta property="og:title" content="Reach on SANMA">
+<meta property="og:description" content="ブラウザだけで遊べる三人麻雀。通信なし・1ファイル・CPUは覗き見しない。">
+<meta property="og:type" content="website">
+<link rel="icon" href="assets/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700;750&family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<header class="header">
+  <div class="wrap header-inner">
+    <a class="brand" href="#top"><img src="assets/icon.png" alt=""> Reach on SANMA</a>
+    <nav class="nav">
+      <a href="#cpu">相手</a>
+      <a href="#rules">ルール</a>
+      <a href="#how">遊び方</a>
+      <a href="#faq">よくある質問</a>
+      <a class="btn btn-main" href="app/">いますぐ遊ぶ</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="pill"><b>無料</b> · インストール不要 · 通信なし · MIT License</span>
+        <h1>サンマは、<br>ブラウザで足りる。</h1>
+        <p class="lead">アプリも登録も要りません。開いた瞬間から東1局。
+          打ち筋の違う5人のCPUが相手で、北抜き・ツモ損ありの本格ルール。
+          HTML 1ファイルなので、圏外でも遊べます。</p>
+        <div class="hero-actions">
+          <a class="btn btn-main" href="app/">いますぐ遊ぶ</a>
+          <a class="btn btn-sub" href="https://github.com/pikaring/reach-on-sanma">GitHubで見る</a>
+        </div>
+        <p class="hero-note">CPUは他家の手牌も山も見ていません。テストで確かめてあります。</p>
+      </div>
+
+      <!-- 実物の盤面（app/css/style.css）の配色・段構成に合わせたモック -->
+      <div class="phone" aria-hidden="true">
+        <div class="board">
+          <div class="tb"><span class="tt">三人麻雀</span><span>敵:ふつう</span><span>ヒント</span><span>速度:普</span><span>新規</span><span>ルール</span></div>
+          <div class="ib"><span>東1局 1本場</span><span>残り <b>38</b></span><span>供託 1</span><span>ドラ <i class="t p">5<small>筒</small></i></span></div>
+
+          <div class="seat">
+            <div class="sh"><b>下家　猛牛</b><span>33,000</span></div>
+            <div class="row backs"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="row"><i class="t s">3<small>索</small></i><i class="t p dim">9<small>筒</small></i><i class="t z">西</i><i class="t m">1<small>萬</small></i><i class="t s dim">7<small>索</small></i><i class="t z">白</i></div>
+          </div>
+
+          <div class="seat">
+            <div class="sh"><b>上家　岩</b><span class="rc">リーチ</span><span>36,000</span></div>
+            <div class="row backs"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="row"><i class="t p">2<small>筒</small></i><i class="t z dim">東</i><i class="t s">9<small>索</small></i><i class="t m dim">9<small>萬</small></i><i class="t z">發</i><i class="t p riichi">4<small>筒</small></i><i class="t s dim">1<small>索</small></i></div>
+          </div>
+
+          <div class="log">上家 リーチ！　下家 4筒 通過</div>
+
+          <div class="seat me">
+            <div class="row"><i class="t z dim">南</i><i class="t m">9<small>萬</small></i><i class="t p">1<small>筒</small></i><i class="t s dim">2<small>索</small></i><i class="t z">中</i></div>
+            <div class="row"><span class="kita">抜</span><i class="t z">北</i><i class="t z">北</i></div>
+            <div class="row hand"><i class="t m">1<small>萬</small></i><i class="t p">2<small>筒</small></i><i class="t p">3<small>筒</small></i><i class="t p">4<small>筒</small></i><i class="t p red">5<small>筒</small></i><i class="t s">6<small>索</small></i><i class="t s">6<small>索</small></i><i class="t s">6<small>索</small></i><i class="t s">7<small>索</small></i><i class="t s">8<small>索</small></i><i class="t z">白</i><i class="t z">白</i><i class="t z">發</i><i class="t p draw">6<small>筒</small></i></div>
+          </div>
+          <div class="acts"><span class="ab">リーチ</span><span class="ab sub">パス</span><span class="hint">テンパイ　待ち 6索・9索　残り 5枚</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="specs">
+    <div class="wrap specs-grid">
+      <div class="spec"><b>通信なし・1ファイル</b><span>約90KBのHTML。圏外でも動く</span></div>
+      <div class="spec"><b>5人の打ち筋 × 3段階</b><span>毎回2人がランダムで卓に着く</span></div>
+      <div class="spec"><b>三麻の本格ルール</b><span>北抜き・ツモ損・頭ハネ・搶槓</span></div>
+      <div class="spec"><b>iPhoneで1画面</b><span>手牌14枚が必ず1列に収まる</span></div>
+    </div>
+  </div>
+
+  <section id="cpu">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">01 — OPPONENTS</p>
+        <h2>打ち筋の違う5人が、<br>覗き見せずに打つ。</h2>
+        <p>速攻・打点・守備の重みが違う5人から、半荘ごとに2人が選ばれます。
+          CPUが見ているのは自分の手牌と、河・副露・ドラ表示牌だけ。
+          他家の手牌・山・裏ドラにアクセスしたら例外を投げるテストで確認しています。</p>
+      </div>
+
+      <div class="chars">
+        <div class="char"><div class="cn">①</div><h3>デジタル</h3><p>基準の打ち手。1翻確定なら鳴き、ほぼ即リー。</p><div class="stat"><span>和了 25.3%</span><span>放銃 14.6%</span></div></div>
+        <div class="char"><div class="cn">②</div><h3>猛牛</h3><p>テンパイなら全押し。最も放銃し、最もテンパイまで押す。</p><div class="stat"><span>和了 29.2%</span><span class="hot">放銃 22.5%</span></div></div>
+        <div class="char"><div class="cn">③</div><h3>岩</h3><p>他家リーチで即ベタオリ。最も放銃しない。</p><div class="stat"><span>和了 22.1%</span><span class="cool">放銃 10.7%</span></div></div>
+        <div class="char"><div class="cn">④</div><h3>鳶</h3><p>2向聴から鳴く速攻型。最も鳴いて、最も安い。</p><div class="stat"><span class="hot">副露 48%</span><span>平均 7,170点</span></div></div>
+        <div class="char"><div class="cn">⑤</div><h3>龍</h3><p>染め手しか鳴かない打点型。最も鳴かず、最も高い。</p><div class="stat"><span class="cool">副露 11%</span><span class="hot">平均 9,524点</span></div></div>
+      </div>
+      <p class="note">数字は各キャラをデジタル2人と600局戦わせた実測値。<code>node tests/characters.js</code> で再測定できます。</p>
+
+      <div class="levels">
+        <div class="lv"><b>やさしい</b><span>場の残り枚数を読まない。45%は次善手</span></div>
+        <div class="lv"><b>ふつう</b><span>残り枚数を読む。20%は次善手</span></div>
+        <div class="lv"><b>つよい</b><span>常に評価式の1位を選ぶ</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="alt" id="rules">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">02 — RULES</p>
+        <h2>フリー雀荘の三麻に、<br>だいたい合わせてある。</h2>
+        <p>関西・北海道系の一般的なルールです。細かい採用は画面の「ルール」ボタンからいつでも見られます。</p>
+      </div>
+
+      <div class="cards">
+        <div class="card">
+          <p class="num">基本</p>
+          <h3>108枚・東風戦</h3>
+          <ul>
+            <li>萬子は一萬と九萬のみ（二〜八萬を抜く）</li>
+            <li>赤ドラは赤五筒・赤五索が各1枚</li>
+            <li>持ち点35,000点、親の連荘あり、飛びで終了</li>
+          </ul>
+        </div>
+        <div class="card">
+          <p class="num">鳴き</p>
+          <h3>チーなし・北は抜きドラ</h3>
+          <ul>
+            <li>ポン・暗槓・加槓・大明槓</li>
+            <li>北を抜くと嶺上牌をツモり、1枚1翻。門前は崩れない</li>
+            <li>抜いた北は搶槓の対象</li>
+          </ul>
+        </div>
+        <div class="card">
+          <p class="num">点数</p>
+          <h3>ツモ損あり</h3>
+          <ul>
+            <li>子のツモは「親2：子1」、親のツモは「子2×2」</li>
+            <li>流局時は3,000点を分配</li>
+            <li>数え役満あり、切り上げ満貫なし、倍役満まで</li>
+          </ul>
+        </div>
+        <div class="card">
+          <p class="num">進行</p>
+          <h3>一発・裏ドラ・搶槓まで</h3>
+          <ul>
+            <li>一発、フリテン（同巡・リーチ後）、槍槓、嶺上開花、海底／河底</li>
+            <li>ダブロンなし（頭ハネ）</li>
+            <li>途中流局・九蓮宝燈・流し満貫は未実装</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="night" id="how">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">03 — HOW TO PLAY</p>
+        <h2>開いて、切るだけ。</h2>
+        <p>自分の番になったら手牌をタップ。鳴ける場面ではボタンが出ます。
+          迷ったら「ヒント」でシャンテン数と待ちが見られます。</p>
+      </div>
+
+      <div class="night-grid">
+        <div class="night-list">
+          <div class="night-item">
+            <b>リーチ</b>
+            <span>「リーチ」を押してから捨てる牌を選びます。以降は自動でツモ切り。
+              ツモ和了・暗カン・北抜きができるときだけ止まります。</span>
+          </div>
+          <div class="night-item">
+            <b>河の見方</b>
+            <span>沈んだ牌面はツモ切り、赤枠はリーチ宣言牌、薄い牌は鳴かれた牌。
+              手出しのほうが多いので、少数派のツモ切り側に印を付けています。</span>
+          </div>
+          <div class="night-item">
+            <b>速度と強さ</b>
+            <span>CPUの打牌速度は遅／普／速／瞬の4段階。強さは対局の途中でも変えられます。</span>
+          </div>
+        </div>
+
+        <div class="steps-box">
+          <div class="flow-step"><em>1</em><span><a href="app/">app/</a> を開く。iPhoneならホーム画面に追加しておくと便利</span></div>
+          <div class="flow-step"><em>2</em><span>「敵」で強さを選ぶ（やさしい／ふつう／つよい）</span></div>
+          <div class="flow-step"><em>3</em><span>手牌をタップして打牌。ポン・カン・ロンはボタンで</span></div>
+          <div class="flow-step"><em>4</em><span>東3局まで、または誰かが飛ぶまで</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="faq" id="faq">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">04 — FAQ</p>
+        <h2>よくある質問</h2>
+      </div>
+
+      <details>
+        <summary>通信はしますか？</summary>
+        <p>しません。読み込むのはHTML・CSS・JSだけで、対局中に外部と通信する処理はありません。
+          <code>standalone.html</code> 1ファイルをダウンロードしておけば、圏外でも遊べます。</p>
+      </details>
+      <details>
+        <summary>CPUはこちらの手牌を見ていませんか？</summary>
+        <p>見ていません。CPUが参照するのは自分の手牌と、誰にでも見える河・副露・ドラ表示牌だけです。
+          <code>node tests/audit.js</code> は、CPUの思考中に他家の手牌・山・王牌・裏ドラへアクセスすると
+          例外を投げる状態で対局を回し、それが起きないことを確認します。</p>
+      </details>
+      <details>
+        <summary>スマホで遊べますか？</summary>
+        <p>iPhoneを基準に作っています（420×912から360×640まで、スクロールなしで1画面に収まることを確認済み）。
+          パソコンのブラウザでも遊べます。</p>
+      </details>
+      <details>
+        <summary>4人麻雀はありますか？</summary>
+        <p>ありません。三人麻雀専用です。萬子の二〜八がなく、チーがなく、北が抜きドラという
+          三麻の特徴にあわせてシャンテン計算とCPUの思考を作っています。</p>
+      </details>
+      <details>
+        <summary>相手の手牌を見る方法はありますか？</summary>
+        <p>あります。タイトルの「三人麻雀」を3秒以内に5回タップすると、相手の手牌とシャンテン数・待ちが表示されます。
+          変わるのは画面だけで、CPUの打ち方には影響しません。研究や動作確認にどうぞ。</p>
+      </details>
+      <details>
+        <summary>名前の由来は？</summary>
+        <p>リーチ（reach）と、三麻＝秋刀魚。アイコンは炭火の上の秋刀魚に、三麻の主役である北の牌を添えました。</p>
+      </details>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="wrap">
+      <p class="eyebrow" style="justify-content:center">READY TO REACH</p>
+      <h2>東1局、はじめます。</h2>
+      <p style="margin-top:14px">インストールも登録も要りません。ブラウザで開いてすぐ打てます。</p>
+      <div class="hero-actions">
+        <a class="btn btn-main" href="app/">いますぐ遊ぶ</a>
+        <a class="btn btn-sub" href="app/standalone.html" download="reach-on-sanma.html">1ファイル版をダウンロード</a>
+      </div>
+      <p class="hero-note">MIT License · 依存ライブラリなし</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <span>Reach on SANMA</span>
+    <a href="https://github.com/pikaring/reach-on-sanma">GitHub</a>
+    <a href="https://github.com/pikaring/reach-on-sanma/blob/main/LICENSE">MIT License</a>
+    <a href="https://github.com/pikaring/reach-on-sanma/blob/main/README.md">README</a>
+    <span class="sep">依存ライブラリなし・外部素材なし</span>
+  </div>
+</footer>
+
+</body>
+</html>
