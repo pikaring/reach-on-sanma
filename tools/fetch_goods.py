@@ -95,8 +95,10 @@ def main():
         for e in res.get('errors') or []:
             print('  ! ', e.get('code'), e.get('message'))
         for it in (res.get('itemResults') or res.get('itemsResult') or {}).get('items') or []:
+            # 価格は listings[].price.money.displayAmount。カートボックス（isBuyBoxWinner）を優先する
             listings = ((it.get('offersV2') or {}).get('listings') or [])
-            price = (listings[0].get('price') or {}).get('displayAmount') if listings else None
+            listings = sorted(listings, key=lambda l: not l.get('isBuyBoxWinner'))
+            price = ((listings[0].get('price') or {}).get('money') or {}).get('displayAmount') if listings else None
             items[it['asin']] = {
                 'title': ((it.get('itemInfo') or {}).get('title') or {}).get('displayValue'),
                 'image': (((it.get('images') or {}).get('primary') or {}).get('large') or {}).get('url'),
