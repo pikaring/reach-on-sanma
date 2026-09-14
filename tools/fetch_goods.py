@@ -16,6 +16,7 @@ import os
 import re
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 
 TOKEN_URL = 'https://api.amazon.co.jp/auth/o2/token'       # FE（日本）
@@ -24,14 +25,38 @@ MARKETPLACE = 'www.amazon.co.jp'
 RESOURCES = ['itemInfo.title', 'images.primary.medium', 'offersV2.listings.price']
 
 
-def post(url, body, headers):
-    req = urllib.request.Request(url, data=json.dumps(body).encode('utf-8'),
-                                 headers={'Content-Type': 'application/json', **headers}, method='POST')
+def post(url, body, headers, form=False, soft=False):
+    if form:
+        data = urllib.parse.urlencode(body).encode('utf-8')
+        ctype = 'application/x-www-form-urlencoded'
+    else:
+        data = json.dumps(body).encode('utf-8')
+        ctype = 'application/json'
+    req = urllib.request.Request(url, data=data, headers={'Content-Type': ctype, **headers}, method='POST')
     try:
         with urllib.request.urlopen(req, timeout=30) as r:
             return json.loads(r.read().decode('utf-8'))
     except urllib.error.HTTPError as e:
-        sys.exit(f'HTTP {e.code} {url}\n{e.read().decode("utf-8", "replace")[:800]}')
+        msg = 'HTTP %d %s | %s' % (e.code, url, e.read().decode('utf-8', 'replace')[:600].replace('\n', ' '))
+        if soft:
+            print('  ×', msg)
+            return None
+        sys.exit(msg)
+
+
+def get_token(cid, sec):
+    """FE（日本）のJSON形式が本来の形。ダメなら form 形式、NA・EU のエンドポイントの順に試して原因を切り分ける。"""
+    body = {'grant_type': 'client_credentials', 'client_id': cid, 'client_secret': sec,
+            'scope': 'creatorsapi::default'}
+    tries = [(TOKEN_URL, False), (TOKEN_URL, True),
+             ('https://api.amazon.com/auth/o2/token', False),
+             ('https://api.amazon.co.uk/auth/o2/token', False)]
+    for url, form in tries:
+        print('token:', url, 'form' if form else 'json')
+        tok = post(url, body, {}, form=form, soft=True)
+        if tok and tok.get('access_token'):
+            return tok['access_token']
+    sys.exit('トークンが取れません（Credential ID / Secret / Version を確認してください）')
 
 
 def main():
@@ -46,7 +71,8 @@ def main():
         sys.exit('CREATORS_CLIENT_ID / CREATORS_CLIENT_SECRET が未設定です')
     # 貼り付け時の前後の空白・改行で 401 になりやすいので落としておく。中身は出さない
     cid, sec = cid.strip(), sec.strip()
-    print(f'client_id: {len(cid)}文字 ({"amzn1." if cid.startswith("amzn1.") else "先頭が amzn1. ではない"})  secret: {len(sec)}文字')
+    print('client_id: %d文字 (%s)  secret: %d文字' % (
+        len(cid), 'amzn1.' if cid.startswith('amzn1.') else '先頭が amzn1. ではない', len(sec)))
 
     html = io.open(a.html, encoding='utf-8').read()
     asins = sorted(set(re.findall(r'class="good"[^>]*data-asin="([A-Z0-9]{10})"', html)))
@@ -54,9 +80,7 @@ def main():
         sys.exit('data-asin が見つかりません: ' + a.html)
     print('ASIN:', ', '.join(asins))
 
-    tok = post(TOKEN_URL, {'grant_type': 'client_credentials', 'client_id': cid,
-                           'client_secret': sec, 'scope': 'creatorsapi::default'}, {})
-    token = tok.get('access_token') or sys.exit('トークンが取れません: ' + json.dumps(tok)[:300])
+    token = get_token(cid, sec)
 
     items = {}
     for i in range(0, len(asins), 10):                      # 1回10件まで
@@ -82,7 +106,7 @@ def main():
            'items': items}
     os.makedirs(os.path.dirname(a.out) or '.', exist_ok=True)
     io.open(a.out, 'w', encoding='utf-8', newline='\n').write(json.dumps(out, ensure_ascii=False, indent=1) + '\n')
-    print('書き出し:', a.out, f'({len(items)}件)')
+    print('書き出し:', a.out, '(%d件)' % len(items))
 
 
 if __name__ == '__main__':
