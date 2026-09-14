@@ -22,7 +22,7 @@ import urllib.request
 TOKEN_URL = 'https://api.amazon.co.jp/auth/o2/token'       # FE（日本）
 API_URL = 'https://creatorsapi.amazon/catalog/v1/getItems'
 MARKETPLACE = 'www.amazon.co.jp'
-RESOURCES = ['itemInfo.title', 'images.primary.medium', 'offersV2.listings.price']
+RESOURCES = ['itemInfo.title', 'images.primary.large', 'offersV2.listings.price']
 
 
 def post(url, body, headers, form=False, soft=False):
@@ -99,11 +99,13 @@ def main():
             price = (listings[0].get('price') or {}).get('displayAmount') if listings else None
             items[it['asin']] = {
                 'title': ((it.get('itemInfo') or {}).get('title') or {}).get('displayValue'),
-                'image': (((it.get('images') or {}).get('primary') or {}).get('medium') or {}).get('url'),
+                'image': (((it.get('images') or {}).get('primary') or {}).get('large') or {}).get('url'),
                 'price': price,
                 'url': it.get('detailPageURL'),
             }
             print('  ok', it['asin'], (items[it['asin']]['title'] or '')[:40], price)
+            if price is None:
+                print('     offersV2:', json.dumps(it.get('offersV2'), ensure_ascii=False)[:400])
 
     if not items:
         sys.exit('商品が1件も取れませんでした')
