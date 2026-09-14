@@ -248,25 +248,25 @@
         <p>「つよい」に勝てなくなったら本の出番です。三人麻雀の戦術書と、三麻を題材にした漫画を並べておきます。</p>
       </div>
       <div class="goods-grid">
-        <div class="good">
+        <div class="good" data-asin="4839976651">
           <p class="gcat">戦術書</p>
           <h3>鬼打ち天鳳位の三人麻雀 勝利へのプロセス</h3>
           <p>北抜きの判断、押し引き、ツモ損のある点数感覚まで。三麻の考え方を一冊で。</p>
           <a class="glink" href="https://www.amazon.co.jp/dp/4839976651?tag=redcomet-22" target="_blank" rel="sponsored noopener">Amazonで見る ↗</a>
         </div>
-        <div class="good">
+        <div class="good" data-asin="4866730870">
           <p class="gcat">戦術書</p>
           <h3>データで勝つ三人麻雀</h3>
           <p>牌譜の統計から「どの牌が何割で通るか」を数字で示す本。CPUの評価式を作るときにも参考にしました。</p>
           <a class="glink" href="https://www.amazon.co.jp/dp/4866730870?tag=redcomet-22" target="_blank" rel="sponsored noopener">Amazonで見る ↗</a>
         </div>
-        <div class="good">
+        <div class="good" data-asin="480195992X">
           <p class="gcat">漫画</p>
           <h3>兎 野性の闘牌 愛蔵版</h3>
           <p>三人麻雀を題材にした漫画の代表格。三麻特有の速さと打点が、そのまま物語になっています。</p>
           <a class="glink" href="https://www.amazon.co.jp/dp/480195992X?tag=redcomet-22" target="_blank" rel="sponsored noopener">Amazonで見る ↗</a>
         </div>
-        <div class="good">
+        <div class="good" data-asin="B00DVYTZ12">
           <p class="gcat">漫画</p>
           <h3>アカギ 闇に降り立った天才 1</h3>
           <p>四麻ですが、押し引きの極端さは三麻にも通じます。ざわ…ざわ…。</p>
@@ -315,6 +315,35 @@
     .then(function (r) { return r.json(); })
     .then(function (d) { el.textContent = Number(d.count).toLocaleString('ja-JP'); })
     .catch(function () { el.textContent = '―'; });
+})();
+</script>
+<script>
+// Amazon Creators API で取った商品情報（tools/fetch_goods.py が assets/goods.json に書く）。
+// 取れていれば画像と価格を足し、無ければテキストカードのまま。
+(function () {
+  var cards = document.querySelectorAll('.good[data-asin]');
+  if (!cards.length) return;
+  fetch('assets/goods.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }).then(function (d) {
+    var at = new Date(d.fetchedAt);
+    var stamp = isNaN(at) ? '' : (at.getMonth() + 1) + '/' + at.getDate() + '時点';
+    cards.forEach(function (c) {
+      var it = d.items && d.items[c.dataset.asin];
+      if (!it) return;
+      if (it.image) {
+        var img = document.createElement('img');
+        img.className = 'gimg'; img.src = it.image; img.alt = ''; img.loading = 'lazy';
+        c.insertBefore(img, c.firstChild);
+      }
+      if (it.price) {
+        var p = document.createElement('p');
+        p.className = 'gprice';
+        p.innerHTML = it.price + (stamp ? ' <small>' + stamp + '</small>' : '');
+        var link = c.querySelector('.glink');
+        c.insertBefore(p, link);
+      }
+      if (it.url) { var a = c.querySelector('.glink'); if (a) a.href = it.url; }
+    });
+  }).catch(function () { /* 取れなければ何もしない */ });
 })();
 </script>
 </body>
