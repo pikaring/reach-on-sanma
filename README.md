@@ -13,6 +13,22 @@
 
 名前はリーチ（reach）と、三麻＝秋刀魚の駄洒落から。アイコンは炭火の秋刀魚と北の牌です。
 
+## English
+
+**Reach on SANMA** is a three-player riichi mahjong (sanma) game that runs entirely in the browser.
+No install, no sign-up, no network traffic, no dependencies. Open `app/index.html` and play,
+or grab the single-file build `app/standalone.html` (~110 KB) and play offline.
+
+- Play now: <https://pikaring.github.io/reach-on-sanma/app/>
+- Five CPU opponents with distinct styles (speed / value / defense weights); two are seated each game. Three difficulty levels.
+- Standard sanma rules: no chii, North is a bonus tile (kita), tsumo-loss scoring, atamahane, chankan on kita, red fives, uradora, ippatsu.
+- **The AI never peeks.** It only sees its own hand plus public information (discards, melds, dora indicators).
+  `node tests/audit.js` plays 300 hands with a guard that throws on any access to hidden tiles, and reports zero violations.
+- Layout is designed for an iPhone screen (14 tiles always fit in one row); works on desktop too.
+- The UI is in Japanese. Tile faces use numerals plus 筒 (pin) / 索 (sou) / 萬 (man), and honor tiles use the usual kanji.
+
+The name is a pun: *reach* (riichi) and *sanma*, which means both "three-player mahjong" and "Pacific saury" — hence the grilled fish on the icon.
+
 ```
 reach-on-sanma/
 ├── index.html        紹介ページ（GitHub Pages のトップ）
