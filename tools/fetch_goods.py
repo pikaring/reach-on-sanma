@@ -44,6 +44,9 @@ def main():
     tag = os.environ.get('AMAZON_TAG', 'redcomet-22')
     if not cid or not sec:
         sys.exit('CREATORS_CLIENT_ID / CREATORS_CLIENT_SECRET が未設定です')
+    # 貼り付け時の前後の空白・改行で 401 になりやすいので落としておく。中身は出さない
+    cid, sec = cid.strip(), sec.strip()
+    print(f'client_id: {len(cid)}文字 ({"amzn1." if cid.startswith("amzn1.") else "先頭が amzn1. ではない"})  secret: {len(sec)}文字')
 
     html = io.open(a.html, encoding='utf-8').read()
     asins = sorted(set(re.findall(r'class="good"[^>]*data-asin="([A-Z0-9]{10})"', html)))
