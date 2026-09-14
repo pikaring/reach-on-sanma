@@ -71,6 +71,11 @@ def main():
         sys.exit('CREATORS_CLIENT_ID / CREATORS_CLIENT_SECRET が未設定です')
     # 貼り付け時の前後の空白・改行で 401 になりやすいので落としておく。中身は出さない
     cid, sec = cid.strip(), sec.strip()
+    # Credential ID は amzn1.application-oa2-client.…（61文字）、Secret は amzn1.oa2-cs.v1.…（80文字）。
+    # 逆に登録されていても動くように入れ替える
+    if cid.startswith('amzn1.oa2-cs.') and sec.startswith('amzn1.application-oa2-client.'):
+        cid, sec = sec, cid
+        print('※ ID と Secret が逆に登録されているので入れ替えて使います')
     print('client_id: %d文字 (%s)  secret: %d文字' % (
         len(cid), 'amzn1.' if cid.startswith('amzn1.') else '先頭が amzn1. ではない', len(sec)))
 
