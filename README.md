@@ -6,9 +6,11 @@
 
 - 紹介ページ: <https://pikaring.github.io/reach-on-sanma/>
 - ゲーム本体: <https://pikaring.github.io/reach-on-sanma/app/>
-- 1 ファイル版: [`app/standalone.html`](app/standalone.html)（約 110 KB。これ 1 つで配布できます）
+- 1 ファイル版: [`app/standalone.html`](app/standalone.html)（約 260 KB。顔アイコンも埋め込み済みで、これ 1 つで配布できます）
 
-打ち筋の違う 5 人の CPU（半荘ごとに 2 人が卓に着く）と 3 段階の強さ。北抜き・ツモ損ありの三麻ルール。
+対戦相手は猫街三部作（猫街ろまん／猫が消えた街／街と、その白い壁）の 6 人。ナオ・フミ・マキ・チカ・タコ大王・イカ女王から
+半荘ごとに 2 人が卓に着き、ひとりずつ打ち筋が違います。和了や優勝のときは顔アイコンとひとことで喜び、
+あなたが和了ると放銃した人がくやしがります。強さは 3 段階。北抜き・ツモ損ありの三麻ルール。
 **CPU は他家の手牌・山・裏ドラを一切見ていません**（`tests/audit.js` で検証）。
 
 名前はリーチ（reach）と、三麻＝秋刀魚の駄洒落から。アイコンは炭火の秋刀魚と北の牌です。
@@ -17,10 +19,10 @@
 
 **Reach on SANMA** is a three-player riichi mahjong (sanma) game that runs entirely in the browser.
 No install, no sign-up, no network traffic, no dependencies. Open `app/index.html` and play,
-or grab the single-file build `app/standalone.html` (~110 KB) and play offline.
+or grab the single-file build `app/standalone.html` (~260 KB) and play offline.
 
 - Play now: <https://pikaring.github.io/reach-on-sanma/app/>
-- Five CPU opponents with distinct styles (speed / value / defense weights); two are seated each game. Three difficulty levels.
+- Six CPU opponents from the author's Neko-Machi trilogy with distinct styles (speed / value / defense weights); two are seated each game, and the winner gets a face icon and a one-liner. Three difficulty levels.
 - Standard sanma rules: no chii, North is a bonus tile (kita), tsumo-loss scoring, atamahane, chankan on kita, red fives, uradora, ippatsu.
 - **The AI never peeks.** It only sees its own hand plus public information (discards, melds, dora indicators).
   `node tests/audit.js` plays 300 hands with a guard that throws on any access to hidden tiles, and reports zero violations.
@@ -41,6 +43,7 @@ reach-on-sanma/
     ├── css/style.css
     ├── js/
     │   ├── tiles.js      牌の定義・山・ドラ・表記
+    │   ├── faces.js      登場人物の顔アイコン（tools/make_faces.py が生成）
     │   ├── hand.js       シャンテン数・和了判定・待ち・受け入れ
     │   ├── yaku.js       役判定・符計算・点数計算
     │   ├── ai.js         CPU の思考ルーチン
@@ -173,28 +176,36 @@ iPhone Air（CSS ピクセルで 420 × 912）を基準にした固定レイア�
 
 ### 対戦相手（キャラクター）
 
-半荘ごとに、5 人の打ち筋から 2 人が重複なくランダムで選ばれます。
+半荘ごとに、猫街三部作の 6 人から 2 人が重複なくランダムで選ばれます。
 
 | | α速度 | β打点 | γ守備 | 副露基準 | リーチ | オリ移行 |
 | --- | --- | --- | --- | --- | --- | --- |
-| ①デジタル | 1.0 | 1.0 | 1.0 | 1翻確定以上 | ほぼ即リー | 無筋2枚以上でノーテン時 |
-| ②猛牛 | 1.2 | 1.1 | 0.3 | 緩め | 即リー | ほぼしない（テンパイなら全押し） |
-| ③岩 | 0.9 | 0.6 | 2.5 | 役牌のみ | 打点条件付き | 他家リーチで即ベタオリ |
-| ④鳶 | 1.8 | 0.2 | 0.8 | 2向聴から鳴く | ダマ多め | テンパイ以外は降りる |
-| ⑤龍 | 0.4 | 2.5 | 0.9 | 染め手のみ | 打点足りればダマ | 手役崩壊時のみ |
+| ①ナオ（均） | 1.0 | 1.0 | 1.0 | 1翻確定以上 | ほぼ即リー | 無筋2枚以上でノーテン時 |
+| ②フミ（攻） | 1.2 | 1.1 | 0.3 | 緩め | 即リー | ほぼしない（テンパイなら全押し） |
+| ③マキ（速） | 1.8 | 0.2 | 0.8 | 2向聴から鳴く | ダマ多め | テンパイ以外は降りる |
+| ④チカ（目） | 1.1 | 1.0 | 1.2 | 1翻確定以上 | ほぼ即リー | 他家リーチで2向聴以上なら降りる |
+| ⑤タコ大王（打） | 0.4 | 2.5 | 0.9 | 染め手のみ | 打点足りればダマ | 手役崩壊時のみ |
+| ⑥イカ女王（守） | 0.9 | 0.6 | 2.5 | 役牌のみ | 打点条件付き | 他家リーチで即ベタオリ |
 
-各キャラをデジタル 2 人と 600 局戦わせた実測値です。太字が、そのキャラの看板にあたる数字。
+チカだけは、ドラ（赤・抜きドラ込み）の見積もりに 2.5 倍の重み（`doraW`）がかかります。
+和了・優勝・放銃のときのひとことは、`js/ai.js` の `talk` にあります。
 
-| | 和了率 | 放銃率 | 平均打点 | 満貫率 | リーチ率 | 副露率 | 流局時テンパイ |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| デジタル | 25.3% | 14.6% | 8838 | 61% | 43% | 23% | 52% |
-| 猛牛 | 29.2% | **22.5%** | 9265 | 63% | 37% | 39% | **76%** |
-| 岩 | 22.1% | **10.7%** | 8459 | 63% | 31% | 22% | **32%** |
-| 鳶 | 25.5% | 16.9% | **7170** | **47%** | **25%** | **48%** | 55% |
-| 龍 | 29.8% | 19.1% | **9524** | **71%** | 39% | **11%** | 68% |
+各キャラをナオ 2 人と 600 局戦わせた実測値です。太字が、そのキャラの看板にあたる数字。
 
-猛牛は最も放銃し最もテンパイまで押し、岩は最も放銃せず最も降り、鳶は最も鳴いて最も安く、
-龍は最も鳴かずに最も高い、という形で看板どおりに分かれています。
+| | 和了率 | 放銃率 | 平均打点 | 満貫率 | 和了時ドラ | リーチ率 | 副露率 | 流局時テンパイ |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| ナオ | 25.3% | 14.6% | 8838 | 61% | 2.61 | 43% | 23% | 52% |
+| フミ | 29.2% | **22.5%** | 9265 | 63% | 2.70 | 37% | 39% | **76%** |
+| マキ | 26.8% | 15.7% | **7385** | **44%** | 2.10 | **23%** | **48%** | 66% |
+| チカ | **32.5%** | 18.4% | 8621 | 59% | 2.59 | 46% | 27% | **78%** |
+| タコ大王 | 29.8% | 19.1% | **9524** | **71%** | 2.73 | 39% | **11%** | 68% |
+| イカ女王 | 22.5% | **10.8%** | 8036 | 61% | 2.28 | 33% | 22% | **40%** |
+
+フミは最も放銃しながらテンパイまで押し、マキは最も鳴いて最も安く、チカは最も和了して流局でも最もテンパイしており、
+タコ大王は最も鳴かずに最も高く、イカ女王は最も放銃せず最も降りる、という形で看板どおりに分かれています。
+「和了時ドラ」は和了 1 回あたりのドラ・赤ドラ・抜きドラ・裏ドラの翻数の平均です。
+チカはドラを重く見ますが、この数字はタコ大王やフミとほぼ同じで、差はむしろ和了率と降りの早さに出ました。
+
 `node tests/characters.js` で再測定できます。
 
 ### 難易度（腕前）
@@ -231,3 +242,5 @@ node tests/run.js        # コンソールで実行
 ## ライセンス
 
 MIT License。依存ライブラリ・外部の画像素材は使っていません（アイコンは `make_icon.py` で生成）。
+登場人物の顔は、同じ作者の「[街と、その白い壁](https://github.com/pikaring/white-squid)」の立ち絵を `tools/make_faces.py` で切り抜き、
+`app/js/faces.js` に埋め込んだものです（1 ファイル版でも表示されます）。

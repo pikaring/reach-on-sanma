@@ -22,42 +22,82 @@
   var MJ = global.MJ;
   var KITA = 30;
 
-  /* --- キャラクター ---------------------------------------------------- */
+  /* --- キャラクター ----------------------------------------------------
+   * 猫街三部作（猫街ろまん／猫が消えた街／街と、その白い壁）の 6 人。
+   * id は顔アイコン（faces.js）の名前。talk は和了・優勝・放銃などのひとこと。
+   * doraW はドラの見積もりへの追加の重み（既定 1）。 */
   var CHARACTERS = [
     {
-      name: 'デジタル', tag: '均',
+      id: 'nao', name: 'ナオ', tag: '均',
       speed: 1.0, value: 1.0, defense: 1.0,
       call: 'yaku', riichi: 'always', foldFrom: 1, foldDanger: 2,
       call_ja: '1翻確定以上', riichi_ja: 'ほぼ即リー', fold_ja: '無筋2枚以上でノーテン時',
-      desc: '定石どおりに打つ。速度・打点・守備のどれにも寄らない'
+      desc: '小柄な黒髪メガネ。定石どおりに打ち、速度・打点・守備のどれにも寄らない',
+      talk: {
+        win: ['計算どおり、ね。', '待ちの枚数、ちゃんと数えてたわ。', '牌効率は裏切らないの。'],
+        top: ['わたしの勝ち。…もう 1 半荘、つきあってくれる？', '落ち着いて打てば、結果はついてくるわ。'],
+        lose: ['あれ…どこで読み違えたのかしら。', 'その待ち、読めなかったわ。']
+      }
     },
     {
-      name: '猛牛', tag: '攻',
+      id: 'fumi', name: 'フミ', tag: '攻',
       speed: 1.2, value: 1.1, defense: 0.3,
       call: 'loose', riichi: 'always', foldFrom: 4,
       call_ja: '緩め', riichi_ja: '即リー', fold_ja: 'ほぼしない（テンパイなら全押し）',
-      desc: '攻撃型。他家のリーチにもほとんど降りず、前に出続ける'
+      desc: '大柄な茶髪のギャル。リーチが来ても降りない。テンパイなら全部押す',
+      talk: {
+        win: ['よっしゃー！ 押し勝ち〜！', 'てかウチ、天才じゃね？', 'オリるとか、ウチの辞書にないし！'],
+        top: ['優勝〜！ ピースピース！', '全部押したら勝ってたんだけど！'],
+        lose: ['え、ちょ、マジ！？', 'くやし〜！ 押しすぎた！？']
+      }
     },
     {
-      name: '岩', tag: '守',
-      speed: 0.9, value: 0.6, defense: 2.5,
-      call: 'yakuhai', riichi: 'value', foldFrom: 0,
-      call_ja: '役牌のみ', riichi_ja: '打点条件付き', fold_ja: '他家リーチで即ベタオリ',
-      desc: '守備型。危険な牌を極端に嫌い、リーチが入ると即座に降りる'
-    },
-    {
-      name: '鳶', tag: '速',
+      id: 'maki', name: 'マキ', tag: '速',
       speed: 1.8, value: 0.2, defense: 0.8,
       call: 'fast', riichi: 'dama', foldFrom: 1,
       call_ja: '2向聴から鳴く', riichi_ja: 'ダマ多め', fold_ja: 'テンパイ以外は降りる',
-      desc: '速攻型。打点を捨てて手数で押し切る'
+      desc: 'ソフトボール部のエース。打点を捨てて、鳴いて鳴いて速さで押し切る',
+      talk: {
+        win: ['ナイスピッチ！ 先に上がった！', '速攻こそエースの仕事！', '安くても、上がったもん勝ち！'],
+        top: ['ゲームセット！ エースの勝ち！', '朝練より疲れた〜。でも勝った！'],
+        lose: ['うそ、打たれた！？', '次の回で取り返す！']
+      }
     },
     {
-      name: '龍', tag: '打',
+      id: 'chika', name: 'チカ', tag: '目',
+      speed: 1.1, value: 1.0, defense: 1.2, doraW: 2.5,
+      call: 'yaku', riichi: 'always', foldFrom: 2,
+      call_ja: '1翻確定以上', riichi_ja: 'ほぼ即リー', fold_ja: '他家リーチで2向聴以上なら降りる',
+      desc: '商店街の魚屋の娘。ドラ・赤・北の目利きで手を仕上げ、見込みのない手は早めに降りる',
+      talk: {
+        win: ['まいどあり〜！ ドラ、のってます！', '魚もドラも、目利きが大事！', 'へへっ、いいとこ仕入れといたんだ。'],
+        top: ['やった！ 今日はお店、半額セール！ …うそうそ。', 'チーム魚屋の勝ち〜！'],
+        lose: ['えっ、そこ待ち！？', '父ちゃんに笑われちゃうな…。']
+      }
+    },
+    {
+      id: 'daiou', name: 'タコ大王', tag: '打',
       speed: 0.4, value: 2.5, defense: 0.9,
       call: 'flush', riichi: 'bigdama', foldFrom: 3,
       call_ja: '染め手のみ', riichi_ja: '打点足りればダマ', fold_ja: '手役崩壊時のみ',
-      desc: '高打点型。安手には目もくれず、染め手と満貫級を狙う'
+      desc: '魚屋を手伝う大王。安手には目もくれず、8 本の足で染め手と満貫級をかき集める',
+      talk: {
+        win: ['大物が釣れたダコ！', '8 本の足で、ぜんぶ染めたダコ。', '小物は海に返すダコ。'],
+        top: ['わしが大王ダコ！ 魚屋の大王ダコ！', '勝ったら、みんなにタコ焼きをおごるダコ。'],
+        lose: ['め、目が回るダコ〜。', 'わしの足が、からまったダコ…。']
+      }
+    },
+    {
+      id: 'queen', name: 'イカ女王', tag: '守',
+      speed: 0.9, value: 0.6, defense: 2.5,
+      call: 'yakuhai', riichi: 'value', foldFrom: 0,
+      call_ja: '役牌のみ', riichi_ja: '打点条件付き', fold_ja: '他家リーチで即ベタオリ',
+      desc: '海の向こうの女王。危ない牌は白い壁のように止め、リーチが入れば即座に守りを固める',
+      talk: {
+        win: ['ごきげんよう。わたくしの勝ちですわ。', '守りを固めれば、勝ちは向こうから来ますの。'],
+        top: ['ひれ伏しなさい。…なんて、ちょっと言ってみたかっただけですわ。', 'わたくしの城に、ようこそ。'],
+        lose: ['な、なんですって！？', 'わたくしの壁が…くずれるなんて。']
+      }
     }
   ];
 
@@ -249,7 +289,7 @@
         if (!lv.useUnseen) accept *= 4;
       }
       var rest = me.hand.filter(function (_, k) { return k !== idx; });
-      var value = (doraValue(game, me, rest) * 12 * lv.doraAware +
+      var value = (doraValue(game, me, rest) * 12 * lv.doraAware * (ch.doraW || 1) +
         shapeBonus(counts, me.seatWind, game.roundWind)) * ch.value;
       counts[tile.t]++;
 
@@ -294,13 +334,13 @@
 
     var est = winEstimate(game, me, counts, tiles);
     switch (ch.riichi) {
-      case 'value':                       // 岩: 打点が伴うときだけ
+      case 'value':                       // イカ女王: 打点が伴うときだけ
         return est.dora >= 1 || est.han >= 1;
-      case 'dama':                        // 鳶: 役があるならダマに構えがち
+      case 'dama':                        // マキ: 役があるならダマに構えがち
         return !(est.hasYaku && rand(game) < 0.7);
-      case 'bigdama':                     // 龍: 満貫級ならダマで十分
+      case 'bigdama':                     // タコ大王: 満貫級ならダマで十分
         return !(est.hasYaku && est.han >= 4);
-      default:                            // デジタル・猛牛: ほぼ即リー
+      default:                            // ナオ・フミ・チカ: ほぼ即リー
         return true;
     }
   }
@@ -332,15 +372,15 @@
     });
 
     switch (ch.call) {
-      case 'yakuhai':                     // 岩: 役牌のみ
+      case 'yakuhai':                     // イカ女王: 役牌のみ
         return isYakuhai;
-      case 'flush':                       // 龍: 染め手のみ
+      case 'flush':                       // タコ大王: 染め手のみ
         return flush;
-      case 'fast':                        // 鳶: 2向聴から鳴く
+      case 'fast':                        // マキ: 2向聴から鳴く
         return after <= 2;
-      case 'loose':                       // 猛牛: 緩め
+      case 'loose':                       // フミ: 緩め
         return isYakuhai || tanyao || flush || hasYakuhai || after <= 1;
-      default:                            // デジタル: 1翻確定が見込めるときだけ
+      default:                            // ナオ・チカ: 1翻確定が見込めるときだけ
         if (isYakuhai) return true;
         return (tanyao || flush || hasYakuhai) && after <= 1;
     }

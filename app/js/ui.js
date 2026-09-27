@@ -93,10 +93,35 @@
     }).join('') + '</div></div>';
   }
 
+  /* --- 顔とひとこと -------------------------------------------------- */
+  function charOfSeat(p) { return p && p.character != null ? MJ.ai.CHARACTERS[p.character] : null; }
+
+  function faceHTML(ch, kind, cls) {
+    var f = ch && MJ.FACES && MJ.FACES[ch.id];
+    return f ? '<img class="face ' + (cls || '') + '" src="' + f[kind || 'normal'] + '" alt="">' : '';
+  }
+
+  function pick(list) { return list[Math.floor(Math.random() * list.length)]; }
+
+  /** 顔と吹き出し。who が CPU なら key のセリフ（勝ち）、loser を渡すとその CPU の負けゼリフ */
+  function speechHTML(p, key) {
+    var ch = charOfSeat(p);
+    if (!ch) return '';
+    var lose = key === 'lose';
+    return '<div class="speech' + (lose ? ' lose' : '') + '">' + faceHTML(ch, lose ? 'lose' : 'win', 'big') +
+      '<div class="bubble"><b>' + esc(ch.name) + '</b>' + esc(pick(ch.talk[key])) + '</div></div>';
+  }
+
+  /** あなたが勝ったときにくやしがる CPU（ロンなら放銃した人） */
+  function loserFor(fromSeat) {
+    if (fromSeat != null && game.players[fromSeat].isAI) return game.players[fromSeat];
+    return pick(game.players.filter(function (q) { return q.isAI; }));
+  }
+
   function headHTML(p, extraChip) {
     var isDealer = p.seat === game.dealer;
-    var ch = p.character != null ? MJ.ai.CHARACTERS[p.character] : null;
-    return '<div class="seat-head">' +
+    var ch = charOfSeat(p);
+    return '<div class="seat-head">' + faceHTML(ch, 'normal') +
       '<span class="wind' + (isDealer ? ' dealer' : '') + '">' +
       MJ.HONOR_LABEL[p.seatWind - 27] + (isDealer ? '親' : '') + '</span>' +
       (p.seatLabel ? '<span class="seat-label">' + p.seatLabel + '</span>' : '') +
@@ -287,6 +312,7 @@
     sheet.innerHTML =
       '<h2>' + esc(p.name) + ' ' + (info.type === 'tsumo' ? 'ツモ' : 'ロン') + '</h2>' +
       '<div class="sub">' + (info.type === 'ron' ? esc(game.players[info.from].name) + ' から' : '') + '</div>' +
+      (p.isAI ? speechHTML(p, 'win') : speechHTML(loserFor(info.type === 'ron' ? info.from : null), 'lose')) +
       '<div class="agari">' + handTiles + '</div>' + kitaLine + doraRow +
       '<div class="yaku-list">' + yakuRows + '</div>' +
       '<div class="score">' + scoreLine + '</div>' +
@@ -309,6 +335,8 @@
     $('#sheet').innerHTML =
       '<h2>対局終了</h2>' +
       (data.busted ? '<div class="sub">飛びにより終了</div>' : '<div class="sub">東3局終了</div>') +
+      (game.players[data.standings[0].seat].isAI ? speechHTML(game.players[data.standings[0].seat], 'top')
+        : speechHTML(game.players[data.standings[data.standings.length - 1].seat], 'lose')) +
       '<div class="standings">' + data.standings.map(function (s, i) {
         return '<div class="' + (s.seat === 0 ? 'me' : '') + '">' +
           rank[i] + '　' + esc(s.name) + '　' + s.points + '点</div>';
@@ -433,7 +461,7 @@
     var el = document.getElementById('char-list');
     if (!el) return;
     el.innerHTML = MJ.ai.CHARACTERS.map(function (c) {
-      return '<div class="char">' +
+      return '<div class="char">' + faceHTML(c, 'normal', 'mid') + '<div class="char-body">' +
         '<div class="char-top"><b>' + esc(c.name) + '</b>' +
         '<span class="tag">' + esc(c.tag) + '</span>' +
         '<span class="nums">速 ' + c.speed.toFixed(1) +
@@ -441,7 +469,7 @@
         '<div class="char-desc">' + esc(c.desc) + '</div>' +
         '<div class="char-desc">鳴き: ' + esc(c.call_ja) +
         '　リーチ: ' + esc(c.riichi_ja) + '　オリ: ' + esc(c.fold_ja) + '</div>' +
-        '</div>';
+        '</div></div>';
     }).join('');
   }
 
