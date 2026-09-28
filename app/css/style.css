@@ -6,8 +6,11 @@
  * 牌のサイズから決めている。
  *
  *   上から  操作ボタン / 局情報 / 対面2人（手牌1段・副露1段・河2段）/
- *           ログ（余白を吸収）/ 自分の河2段 / 自分の副露1段 / 自分の手牌1段 /
- *           コマンド（最下段に固定）
+ *           自分の河2段 / 自分の副露1段 / 自分の手牌1段 / コマンド /
+ *           ログ（余白を吸収。新しい行が上）
+ *
+ * ログを最下段に置くのは、iPhone の Safari で画面下のツールバーが盤面に重なっても、
+ * 隠れるのが古いログだけで済むようにするため。
  */
 
 :root {
@@ -66,11 +69,14 @@ html, body {
   height: 100dvh;
   margin: 0 auto;
   padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
-  display: grid;
-  grid-template-rows: auto auto auto minmax(0, 1fr) auto auto;
+  /* 欄が出たり消えたりしても行の割り当てがずれないよう、縦並び（flex）にする */
+  display: flex;
+  flex-direction: column;
   gap: 5px;
   overflow: hidden;
 }
+#app > * { flex: none; }
+#app > .log { flex: 1 1 0; }
 
 /* ---- 上部の操作ボタン ---- */
 .topbar {
@@ -285,12 +291,13 @@ html, body {
   min-height: 0;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: flex-start;
   scrollbar-width: none;
   text-shadow: 0 1px 2px rgba(0, 0, 0, .5);
 }
 .log::-webkit-scrollbar { display: none; }
 .log div { opacity: .8; flex: none; }
+.log div:first-child { opacity: 1; }
 .log div.hl { color: var(--accent); }
 
 /* ---- 自分 ---- */
