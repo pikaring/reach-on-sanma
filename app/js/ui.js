@@ -14,6 +14,10 @@
 
   var game = null;
   var riichiMode = false;
+  var STORE_KEY = 'reach-on-sanma';
+  var cast = { me: null, opps: [] };  // 顔ぶれ（ブラウザに保存）
+  var OPP_SEATS = ['下家', '上家'];
+  var pickMe = null, pickOpps = [];   // 顔ぶれ選びの途中の状態
   var showHint = false;
   var logLines = [];
 
@@ -126,7 +130,7 @@
       MJ.HONOR_LABEL[p.seatWind - 27] + (isDealer ? '親' : '') + '</span>' +
       (p.seatLabel ? '<span class="seat-label">' + p.seatLabel + '</span>' : '') +
       '<span class="nm">' + esc(p.name) + '</span>' +
-      (ch ? '<span class="tag">' + ch.tag + '</span>' : '') +
+      (ch ? '<span class="tag">' + (p.seat === 0 && !p.isAI ? 'あなた' : ch.tag) + '</span>' : '') +
       '<span class="pt">' + p.points + '</span>' +
       (p.riichi ? '<span class="riichi-mark">リーチ</span>' : '') +
       (extraChip ? '<span class="chip">' + esc(extraChip) + '</span>' : '') +
@@ -312,7 +316,7 @@
     sheet.innerHTML =
       '<h2>' + esc(p.name) + ' ' + (info.type === 'tsumo' ? 'ツモ' : 'ロン') + '</h2>' +
       '<div class="sub">' + (info.type === 'ron' ? esc(game.players[info.from].name) + ' から' : '') + '</div>' +
-      (p.isAI ? speechHTML(p, 'win') : speechHTML(loserFor(info.type === 'ron' ? info.from : null), 'lose')) +
+      (charOfSeat(p) ? speechHTML(p, 'win') : speechHTML(loserFor(info.type === 'ron' ? info.from : null), 'lose')) +
       '<div class="agari">' + handTiles + '</div>' + kitaLine + doraRow +
       '<div class="yaku-list">' + yakuRows + '</div>' +
       '<div class="score">' + scoreLine + '</div>' +
@@ -335,7 +339,7 @@
     $('#sheet').innerHTML =
       '<h2>対局終了</h2>' +
       (data.busted ? '<div class="sub">飛びにより終了</div>' : '<div class="sub">東3局終了</div>') +
-      (game.players[data.standings[0].seat].isAI ? speechHTML(game.players[data.standings[0].seat], 'top')
+      (charOfSeat(game.players[data.standings[0].seat]) ? speechHTML(game.players[data.standings[0].seat], 'top')
         : speechHTML(game.players[data.standings[data.standings.length - 1].seat], 'lose')) +
       '<div class="standings">' + data.standings.map(function (s, i) {
         return '<div class="' + (s.seat === 0 ? 'me' : '') + '">' +
@@ -423,7 +427,28 @@
       case 'pass': game.respondCall('pass'); break;
       case 'next': $('#overlay').hidden = true; game.nextHand(); break;
       case 'restart': $('#overlay').hidden = true; startGame(); break;
-      case 'new-game': startGame(); break;
+      case 'new-game': openPicker(); break;
+      case 'pick-me':
+        var mi = parseInt(btn.getAttribute('data-i'), 10);
+        pickMe = mi < 0 ? null : mi;
+        pickOpps = pickOpps.filter(function (c) { return c !== pickMe; });
+        $('#sheet').innerHTML = pickerHTML();
+        break;
+      case 'pick-opp':
+        var oi = parseInt(btn.getAttribute('data-i'), 10);
+        var at = pickOpps.indexOf(oi);
+        if (at >= 0) pickOpps.splice(at, 1);
+        else if (pickOpps.length < OPP_SEATS.length) pickOpps.push(oi);
+        $('#sheet').innerHTML = pickerHTML();
+        break;
+      case 'pick-random': pickOpps = []; $('#sheet').innerHTML = pickerHTML(); break;
+      case 'pick-cancel': $('#overlay').hidden = true; break;
+      case 'pick-start':
+        cast = { me: pickMe, opps: pickOpps.slice() };
+        saveCast();
+        $('#overlay').hidden = true;
+        startGame();
+        break;
       case 'hint':
         showHint = !showHint;
         btn.textContent = showHint ? 'ヒントON' : 'ヒント';
@@ -444,13 +469,60 @@
     }
   }
 
+  /* --- 顔ぶれを選ぶ -------------------------------------------------- */
+  function loadCast() {
+    try {
+      var s = JSON.parse(localStorage.getItem(STORE_KEY) || '{}');
+      if (s.me != null) cast.me = s.me;
+      if (Array.isArray(s.opps)) cast.opps = s.opps;
+    } catch (e) { /* 保存できない環境でもおまかせで動く */ }
+  }
+  function saveCast() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(cast)); } catch (e) { /* 無視 */ }
+  }
+
+  function pickerHTML() {
+    var C = MJ.ai.CHARACTERS;
+    var meCells = '<button class="pick' + (pickMe == null ? ' on' : '') + '" data-act="pick-me" data-i="-1">' +
+      '<span class="noface">？</span><span class="pn">名なし</span></button>' +
+      C.map(function (c, i) {
+        return '<button class="pick' + (pickMe === i ? ' on' : '') + '" data-act="pick-me" data-i="' + i + '">' +
+          faceHTML(c, 'normal', 'mid') + '<span class="pn">' + esc(c.name) + '</span></button>';
+      }).join('');
+    var oppCells = C.map(function (c, i) {
+      var k = pickOpps.indexOf(i);
+      var mine = pickMe === i;
+      return '<button class="pick' + (k >= 0 ? ' on' : '') + (mine ? ' off' : '') + '" data-act="pick-opp" data-i="' + i + '"' +
+        (mine ? ' disabled' : '') + '>' + faceHTML(c, 'normal', 'mid') +
+        (k >= 0 ? '<span class="order">' + OPP_SEATS[k] + '</span>' : '') +
+        '<span class="pn">' + esc(c.name) + '</span><span class="pt2">' + esc(c.tag) + '</span></button>';
+    }).join('');
+    var rest = OPP_SEATS.length - pickOpps.length;
+    return '<h2>顔ぶれを選ぶ</h2>' +
+      '<div class="sub">あなたのキャラ（和了ったときに顔とひとことが出ます）</div>' +
+      '<div class="pick-grid">' + meCells + '</div>' +
+      '<div class="sub">対戦相手（選んだ順に 下家・上家。' + (rest > 0 ? 'あと ' + rest + ' 人は' : '') + 'おまかせ）</div>' +
+      '<div class="pick-grid">' + oppCells + '</div>' +
+      '<div class="pick-actions">' +
+      '<button class="btn" data-act="pick-random">相手をおまかせに戻す</button>' +
+      '<button class="btn" data-act="pick-cancel">やめる</button>' +
+      '<button class="btn primary" data-act="pick-start">この顔ぶれで始める</button></div>';
+  }
+
+  function openPicker() {
+    pickMe = cast.me;
+    pickOpps = cast.opps.filter(function (c) { return c != null && c !== pickMe; }).slice(0, OPP_SEATS.length);
+    $('#sheet').innerHTML = pickerHTML();
+    $('#overlay').hidden = false;
+  }
+
   function startGame() {
     if (game) game.stop();
     logLines = [];
     riichiMode = false;
     var speed = game ? game.speed : 650;
     var difficulty = game ? game.difficulty : 1;
-    game = new MJ.Game({ speed: speed, difficulty: difficulty, onEvent: onEvent });
+    game = new MJ.Game({ speed: speed, difficulty: difficulty, onEvent: onEvent, me: cast.me, opps: cast.opps });
     global.mjGame = game;
     renderLog();
     game.startGame();
@@ -474,6 +546,7 @@
   }
 
   function init() {
+    loadCast();
     renderCharacters();
     if (global.location && global.location.hash === '#open') setOpenMode(true);
     document.addEventListener('click', function (e) {
